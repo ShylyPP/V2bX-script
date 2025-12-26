@@ -134,8 +134,9 @@ install_V2bX() {
     if  [ $# == 0 ] ;then
         last_version=$(curl -Ls "https://api.github.com/repos/ShylyPP/V2bX-Private/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
-            echo -e "${red}检测 V2bX 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 V2bX 版本安装${plain}"
-            exit 1
+            echo -e "${yellow}检测 V2bX 版本失败，可能是超出 Github API 限制或仓库暂无 release${plain}"
+            echo -e "${yellow}尝试使用默认版本: 0.3.4${plain}"
+            last_version="0.3.4"
         fi
         echo -e "检测到 V2bX 最新版本：${last_version}，开始安装"
         wget --no-check-certificate -N --progress=bar -O /usr/local/V2bX/V2bX-linux.zip https://github.com/ShylyPP/V2bX-Private/releases/download/${last_version}/V2bX-linux-${arch}.zip
@@ -277,7 +278,8 @@ EOF
     if [[ $first_install == true ]]; then
         read -rp "检测到你为第一次安装V2bX,是否自动直接生成配置文件？(y/n): " if_generate
         if [[ $if_generate == [Yy] ]]; then
-            curl -o ./initconfig.sh -Ls https://raw.githubusercontent.com/ShylyPP/V2bX-Private/master/initconfig.sh
+            # 从脚本仓库获取最新的初始化配置生成脚本
+            curl -o ./initconfig.sh -Ls https://raw.githubusercontent.com/ShylyPP/V2bX-script/master/initconfig.sh
             source initconfig.sh
             rm initconfig.sh -f
             generate_config_file
